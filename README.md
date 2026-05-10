@@ -96,6 +96,6 @@ task 析构的时候，不要 destory coro，不然 event loop 有问题。
 
 记得不要同时 initial_suspend 和 await_suspend 同时把 coro_handle 加入 queue，不然会重复 resume。
 
-我们的协程 coro destory方案是，final_suspend的时候，自己 destory自己。
+我们的协程 coro destory方案是，await_resume的时候，自己 destory自己。
 
-return_value 调用时机比 final_suspend 早，所以不用担心 coro frame destroy 后，return_value 无法拿到 coro frame 的 promise 对象的值。
+await_resume 是访问 coro frame promise，并通过 return 设置 co_await 表达式的返回值，这里是最后一次使用 coro frame，可以安全 destory

@@ -52,7 +52,7 @@ task<int> task_child(int id)
 {
     std::cout << id << "task_child: 等待网络请求中" << std::endl;
 
-    co_await sleep_for(2s);
+    co_await sleep_for(500ms);
 
     std::cout << id << "task_child: 完成" << std::endl;
 

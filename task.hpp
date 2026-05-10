@@ -45,7 +45,11 @@ public:
 
     T await_resume() noexcept
     {
-        return m_handle.promise().m_result_value;
+        T result = std::move(m_handle.promise().m_result_value);
+
+        m_handle.destroy();
+
+        return result;
     }
 
     auto handler() const
@@ -80,8 +84,6 @@ struct promise_basic
             std::coroutine_handle<> await_suspend(handle_type h) noexcept
             {
                 auto continuation = h.promise().continuation;
-
-                h.destroy();
 
                 if (continuation)
                 {
