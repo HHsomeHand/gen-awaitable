@@ -99,3 +99,7 @@ task 析构的时候，不要 destory coro，不然 event loop 有问题。
 我们的协程 coro destory方案是，await_resume的时候，自己 destory自己。
 
 await_resume 是访问 coro frame promise，并通过 return 设置 co_await 表达式的返回值，这里是最后一次使用 coro frame，可以安全 destory
+
+这里 final_suspend 如果判断父 coro handle 为空，说明是顶层 coro，这里我们调用 destroy。
+
+但这会导致 task<int> 以后也没办法拿到返回值了。

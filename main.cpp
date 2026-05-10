@@ -74,4 +74,6 @@ int main()
     // task_parent();
 
     task_loop();
+
+    std::cout << "mission complete" << std::endl;
 }

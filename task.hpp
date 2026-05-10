@@ -9,6 +9,7 @@
 #include <future>
 #include <utility>
 
+inline std::atomic<int> g_task_count{0};
 
 void task_loop();
 void add_task(const std::coroutine_handle<>& task);
@@ -49,6 +50,8 @@ public:
 
         m_handle.destroy();
 
+        --g_task_count;
+
         return result;
     }
 
@@ -69,6 +72,8 @@ struct promise_basic
 
     std::suspend_always initial_suspend() noexcept
     {
+        g_task_count++;
+
         return {};
     }
 
@@ -89,6 +94,9 @@ struct promise_basic
                 {
                     return continuation;
                 }
+
+                h.destroy();
+                --g_task_count;
 
                 return std::noop_coroutine();
             }

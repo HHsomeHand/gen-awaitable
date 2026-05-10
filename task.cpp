@@ -5,6 +5,7 @@
 #include "task.hpp"
 
 #include <condition_variable>
+#include <iostream>
 #include <queue>
 
 std::condition_variable g_cv;
@@ -19,13 +20,20 @@ void task_loop()
 
     while (true)
     {
+        // std::cout << g_task_count << std::endl;
+
         {
             std::unique_lock<std::mutex> mutex(g_queue_mutex);
 
             g_cv.wait(mutex, []
             {
-                return !g_task_queue.empty();
+                return !g_task_queue.empty() || g_task_count == 0;
             });
+
+            if (g_task_count == 0)
+            {
+                break;
+            }
 
             std::swap(task_queue, g_task_queue);
         }
