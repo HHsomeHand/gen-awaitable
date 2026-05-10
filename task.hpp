@@ -37,11 +37,18 @@ public:
         return false;
     }
 
-    void await_suspend(std::coroutine_handle<> h) noexcept
+    std::coroutine_handle<>
+    await_suspend(std::coroutine_handle<> h) noexcept
     {
-        add_task(m_handle);
+        // add_task(m_handle);
 
         m_handle.promise().continuation = h;
+
+        // 替代 add_task(m_handle); 直接 "对称转移"
+        // 相当于直接 jmp to target handle
+        // 无需 resume, 没有调用栈深度的增加
+        // 也不用回到 scheduler
+        return m_handle;
     }
 
     T await_resume() noexcept
